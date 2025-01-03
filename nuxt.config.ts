@@ -14,4 +14,15 @@ export default defineNuxtConfig({
     port: 3000,
     host: "0.0.0.0",
   },
+
+  css: ["~/assets/css/main.css"],
+
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
+
+  compatibilityDate: "2025-01-03",
 });
