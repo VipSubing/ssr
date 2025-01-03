@@ -5,7 +5,7 @@
 .nitro
 .cache
 dist
-
+test/output.html
 # Node dependencies
 node_modules
 

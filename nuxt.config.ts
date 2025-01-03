@@ -21,7 +21,7 @@ export default defineNuxtConfig({
   // nitro: {
   //   debug: true,
   // },
-  css: ["~/assets/css/main.css"],
+  css: ["@/assets/css/main.css"],
 
   postcss: {
     plugins: {

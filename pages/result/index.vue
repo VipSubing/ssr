@@ -179,6 +179,16 @@
 </template>
 
 <script setup lang="ts">
+import type { TestResult } from "@/types";
+
+// 打印接收到的参数
+onMounted(() => {
+  const data = useRoute().query.data as string;
+  console.log("Received data:", data);
+  const decodedData = JSON.parse(atob(data)) as TestResult;
+  console.log("Decoded data:", decodedData);
+});
+
 const summaryResults = ref([
   { name: "总分", score: 249, result: "阳性症状", range: "90~450" },
   {

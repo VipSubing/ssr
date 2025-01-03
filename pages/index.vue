@@ -29,7 +29,7 @@ Content-Type: application/json
 
       <div class="mt-8 text-center">
         <NuxtLink
-          to="/result"
+          :to="{ path: '/result', query: { data: json } }"
           class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
         >
           查看示例页面
@@ -40,5 +40,26 @@ Content-Type: application/json
 </template>
 
 <script setup lang="ts">
-// 首页不需要特殊的逻辑
+const test = {
+  totalScore: 249,
+  totalSymptomIndex: 2.77,
+  positiveItemCount: 80,
+  positiveSymptomDistressIndex: 2.99,
+  factorScores: {
+    somatization: 2.33,
+    obsessiveCompulsive: 2.9,
+    interpersonalSensitivity: 3.11,
+    depression: 3.38,
+    anxiety: 2.6,
+    hostility: 2.67,
+    phobicAnxiety: 2.86,
+    paranoidIdeation: 2.67,
+    psychoticism: 2.8,
+    additionalItems: 2,
+  },
+};
+const json = ref("");
+onMounted(() => {
+  json.value = btoa(JSON.stringify(test));
+});
 </script>
