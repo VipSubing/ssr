@@ -18,10 +18,9 @@ export default defineNuxtConfig({
   // 调试配置
   debug: true,
 
-  nitro: {
-    debug: true,
-    logLevel: "debug",
-  },
+  // nitro: {
+  //   debug: true,
+  // },
   css: ["~/assets/css/main.css"],
 
   postcss: {

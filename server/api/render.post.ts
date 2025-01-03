@@ -1,27 +1,28 @@
-import { defineEventHandler, createError } from "h3";
+import { defineEventHandler, createError, readBody } from "h3";
 import { useRuntimeConfig } from "#imports";
-import { logger } from "~/composables/useLogger";
 
 export default defineEventHandler(async (event) => {
   console.log("API endpoint hit");
-
-  logger.debug({ event }, "Received render request");
   try {
     const body = await readBody(event);
-    logger.info({ body }, "Received request body");
-
+    console.log("Request body:", body);
     if (!body.template || !body.data) {
+      console.error("Invalid body structure:", body);
       throw new Error("Missing required fields: template and data");
     }
 
-    const html = `<div>Test render - template: ${body.template}</div>`;
+    const config = useRuntimeConfig();
+    const html = await $fetch(`/pages/${body.template}`, {
+      baseURL: config.app.baseURL,
+      params: body.data,
+    });
 
     return {
       html,
       status: "success",
     };
   } catch (error) {
-    logger.error({ error }, "Error processing render request");
+    console.error("Error processing render request:", error);
     throw createError({
       statusCode: 400,
       message:
