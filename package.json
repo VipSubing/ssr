@@ -6,8 +6,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "test:render": "tsx test/test-render.ts"
+    "preview": "nuxt preview"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
