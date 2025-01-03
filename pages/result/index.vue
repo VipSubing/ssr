@@ -178,9 +178,7 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-
+<script setup lang="ts">
 const summaryResults = ref([
   { name: "总分", score: 249, result: "阳性症状", range: "90~450" },
   {
