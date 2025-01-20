@@ -1,6 +1,5 @@
 import { defineEventHandler, createError, readBody } from "h3";
 import { useRuntimeConfig } from "#imports";
-import { log } from "console";
 
 // 添加 base64 编码函数
 const base64Encode = (obj: any) => {
@@ -17,6 +16,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const config = useRuntimeConfig();
+    // 使用 Nuxt 的渲染功能获取目标路径的内容
 
     const pageContent = await $fetch(`/${body.template}`, {
       baseURL: config.app.baseURL,

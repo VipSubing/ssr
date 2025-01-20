@@ -62,11 +62,7 @@
                     <span
                       v-if="item.severity"
                       class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      :class="
-                        item.severity === '中度'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100 text-gray-800'
-                      "
+                      :class="getSeverityClass(item.severity)"
                     >
                       {{ item.severity }}
                     </span>
@@ -151,11 +147,7 @@
                     </span>
                     <span
                       class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      :class="
-                        factor.severity === '中度'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100 text-gray-800'
-                      "
+                      :class="getSeverityClass(factor.severity)"
                     >
                       {{ factor.severity }}
                     </span>
@@ -180,102 +172,163 @@
 
 <script setup lang="ts">
 import type { TestResult } from "@/types";
-
-// 打印接收到的参数
-onMounted(() => {
-  const data = useRoute().query.data as string;
-  console.log("Received data:", data);
-  const decodedData = JSON.parse(atob(data)) as TestResult;
-  console.log("Decoded data:", decodedData);
-});
-
-const summaryResults = ref([
-  { name: "总分", score: 249, result: "阳性症状", range: "90~450" },
+// 使用 useAsyncData 获取数据
+const data = useRoute().query.data as string;
+console.log("Received data:", data);
+const decodedData = JSON.parse(atob(data)) as TestResult;
+console.log("Decoded data:", decodedData);
+// Update summary results based on decoded data
+const summaryResults = [
+  {
+    name: "总分",
+    score: decodedData.totalScore,
+    result: decodedData.totalScore >= 160 ? "阳性症状" : undefined,
+    range: "90~450",
+  },
   {
     name: "总症状指数",
-    score: 2.77,
-    result: "有症状",
-    severity: "轻度",
+    score: decodedData.totalSymptomIndex,
+    result: decodedData.totalSymptomIndex >= 2 ? "有症状" : undefined,
+    severity: getSeverity(decodedData.totalSymptomIndex),
     range: "1~5",
   },
-  { name: "阳性症状项目数", score: 80, range: "0~90" },
-  { name: "阴性症状项目数", score: 10, range: "0~90" },
-  { name: "阳性症状均分", score: 2.99, range: "0~5" },
-]);
+  {
+    name: "阳性症状项目数",
+    score: decodedData.positiveItemCount,
+    result: decodedData.positiveItemCount >= 43 ? "阳性症状" : undefined,
+    range: "0~90",
+  },
+  {
+    name: "阳性症状均分",
+    score: decodedData.positiveSymptomDistressIndex,
+    range: "0~5",
+  },
+];
 
-const factors = ref([
+// Update factors based on decoded data
+const factors = [
   {
     name: "躯体化",
-    score: 28,
-    average: 2.33,
-    result: true,
-    severity: "轻度",
+    score: decodedData.factorScores.somatization,
+    average: Number((decodedData.factorScores.somatization / 12).toFixed(2)),
+    result:
+      decodedData.factorScores.somatization / 12 >= 2 ? "有症状" : undefined,
+    severity: getSeverity(decodedData.factorScores.somatization / 12),
     range: "12~60",
   },
   {
     name: "强迫症状",
-    score: 29,
-    average: 2.9,
-    result: true,
-    severity: "轻度",
+    score: decodedData.factorScores.obsessiveCompulsive,
+    average: Number(
+      (decodedData.factorScores.obsessiveCompulsive / 10).toFixed(2)
+    ),
+    result:
+      decodedData.factorScores.obsessiveCompulsive / 10 >= 2
+        ? "有症状"
+        : undefined,
+    severity: getSeverity(decodedData.factorScores.obsessiveCompulsive / 10),
     range: "10~50",
   },
   {
     name: "人际敏感",
-    score: 28,
-    average: 3.11,
-    result: true,
-    severity: "中度",
+    score: decodedData.factorScores.interpersonalSensitivity,
+    average: Number(
+      (decodedData.factorScores.interpersonalSensitivity / 9).toFixed(2)
+    ),
+    result:
+      decodedData.factorScores.interpersonalSensitivity / 9 >= 2
+        ? "有症状"
+        : undefined,
+    severity: getSeverity(
+      decodedData.factorScores.interpersonalSensitivity / 9
+    ),
     range: "9~45",
   },
   {
     name: "抑郁",
-    score: 44,
-    average: 3.38,
-    result: true,
-    severity: "中度",
+    score: decodedData.factorScores.depression,
+    average: Number((decodedData.factorScores.depression / 13).toFixed(2)),
+    result:
+      decodedData.factorScores.depression / 13 >= 2 ? "有症状" : undefined,
+    severity: getSeverity(decodedData.factorScores.depression / 13),
     range: "13~65",
   },
   {
     name: "焦虑",
-    score: 26,
-    average: 2.6,
-    result: true,
-    severity: "轻度",
+    score: decodedData.factorScores.anxiety,
+    average: Number((decodedData.factorScores.anxiety / 10).toFixed(2)),
+    result: decodedData.factorScores.anxiety / 10 >= 2 ? "有症状" : undefined,
+    severity: getSeverity(decodedData.factorScores.anxiety / 10),
     range: "10~50",
   },
   {
     name: "敌对",
-    score: 16,
-    average: 2.67,
-    result: true,
-    severity: "轻度",
+    score: decodedData.factorScores.hostility,
+    average: Number((decodedData.factorScores.hostility / 6).toFixed(2)),
+    result: decodedData.factorScores.hostility / 6 >= 2 ? "有症状" : undefined,
+    severity: getSeverity(decodedData.factorScores.hostility / 6),
     range: "6~30",
   },
   {
     name: "恐怖",
-    score: 20,
-    average: 2.86,
-    result: true,
-    severity: "轻度",
+    score: decodedData.factorScores.phobicAnxiety,
+    average: Number((decodedData.factorScores.phobicAnxiety / 7).toFixed(2)),
+    result:
+      decodedData.factorScores.phobicAnxiety / 7 >= 2 ? "有症状" : undefined,
+    severity: getSeverity(decodedData.factorScores.phobicAnxiety / 7),
     range: "7~35",
   },
   {
     name: "偏执",
-    score: 16,
-    average: 2.67,
-    result: true,
-    severity: "轻度",
+    score: decodedData.factorScores.paranoidIdeation,
+    average: Number((decodedData.factorScores.paranoidIdeation / 6).toFixed(2)),
+    result:
+      decodedData.factorScores.paranoidIdeation / 6 >= 2 ? "有症状" : undefined,
+    severity: getSeverity(decodedData.factorScores.paranoidIdeation / 6),
     range: "6~30",
   },
   {
     name: "精神病性",
-    score: 28,
-    average: 2.8,
-    result: true,
-    severity: "轻度",
+    score: decodedData.factorScores.psychoticism,
+    average: Number((decodedData.factorScores.psychoticism / 10).toFixed(2)),
+    result:
+      decodedData.factorScores.psychoticism / 10 >= 2 ? "有症状" : undefined,
+    severity: getSeverity(decodedData.factorScores.psychoticism / 10),
     range: "10~50",
   },
-  { name: "其它", score: 14, average: 2, result: false, range: "-" },
-]);
+  {
+    name: "其它",
+    score: decodedData.factorScores.additionalItems,
+    average: Number((decodedData.factorScores.additionalItems / 7).toFixed(2)),
+    result:
+      decodedData.factorScores.additionalItems / 7 >= 2 ? "有症状" : undefined,
+    severity: getSeverity(decodedData.factorScores.additionalItems / 7),
+    range: "7~35",
+  },
+];
+
+function getSeverity(score: number) {
+  if (score >= 4) {
+    return "重度";
+  } else if (score >= 3) {
+    return "中度";
+  } else if (score >= 1) {
+    return "轻度";
+  } else {
+    return "无症状";
+  }
+}
+
+function getSeverityClass(severity: string) {
+  switch (severity) {
+    case "重度":
+      return "bg-red-100 text-red-800";
+    case "中度":
+      return "bg-yellow-100 text-yellow-800";
+    case "轻度":
+      return "bg-gray-100 text-gray-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+}
 </script>

@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  nuxt-ssr:
+    build: .
+    container_name: nuxt-ssr
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NITRO_HOST=0.0.0.0
+      - NITRO_PORT=3000
+    restart: always

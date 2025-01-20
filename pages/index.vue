@@ -41,25 +41,26 @@ Content-Type: application/json
 
 <script setup lang="ts">
 const test = {
-  totalScore: 249,
+  totalScore: 240,
   totalSymptomIndex: 2.77,
   positiveItemCount: 80,
   positiveSymptomDistressIndex: 2.99,
   factorScores: {
-    somatization: 2.33,
-    obsessiveCompulsive: 2.9,
-    interpersonalSensitivity: 3.11,
-    depression: 3.38,
-    anxiety: 2.6,
-    hostility: 2.67,
-    phobicAnxiety: 2.86,
-    paranoidIdeation: 2.67,
-    psychoticism: 2.8,
+    somatization: 23.3,
+    obsessiveCompulsive: 29,
+    interpersonalSensitivity: 31.1,
+    depression: 33.8,
+    anxiety: 26,
+    hostility: 26.7,
+    phobicAnxiety: 28.6,
+    paranoidIdeation: 26.7,
+    psychoticism: 28,
     additionalItems: 2,
   },
 };
 const json = ref("");
 onMounted(() => {
+  console.log(" index.vue onMounted");
   json.value = btoa(JSON.stringify(test));
 });
 </script>
